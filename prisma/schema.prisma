@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id       String      @id @default(uuid())
+  email    String      @unique
+  password String
+  username String      @unique
+  teacher  Boolean
+  sessions SessionId[]
+}
+
+model inviteLinks {
+  id        String @id @default(uuid())
+  teacherId String
+  classId   String
+  maxUses   Int
+}
+
+//model Classes {
+//id        String @id @default(uuid())
+//teacherId String
+//}
+
+model Students {
+  id     Int     @id @unique @default(autoincrement())
+  userId String
+  admin  Boolean
+}
+
+model Surveys {
+  id        Int    @id @unique @default(autoincrement())
+  name      String
+  teacherId String
+}
+
+model Questions {
+  id       Int    @id @unique @default(autoincrement())
+  value    String
+  type     String
+  surveyId String
+}
+
+model SessionId {
+  sessionId  String @id @default(uuid())
+  expiration String
+  userId     String
+  User       User   @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "SessionId_userId_fkey")
+}
